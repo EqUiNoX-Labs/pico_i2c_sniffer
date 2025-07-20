@@ -18,7 +18,7 @@
 
 #include "ram_fifo.h"
 
-#define PRINT_VAL
+#undef PRINT_VAL
 
 #undef PRINT_TIME_T
 #undef PRINT_HEX_INDEX

@@ -18,7 +18,7 @@
 
 #include "ram_fifo.h"
 
-#undef PRINT_VAL
+#define PRINT_VAL
 
 #undef PRINT_TIME_T
 #undef PRINT_HEX_INDEX
@@ -157,6 +157,12 @@ int main()
     
     // Initialize chosen serial port
     stdio_init_all();
+    while (!stdio_usb_connected()) {
+        sleep_ms(100);
+    }
+
+    printf("Hello, USB serial is connected!\n");
+    
 
     // Initialize the four state machines that decode the i2c bus states.
     uint sm_main = pio_claim_unused_sm(pio, true);

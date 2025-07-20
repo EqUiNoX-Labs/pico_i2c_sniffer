@@ -96,6 +96,9 @@ void core1_print() {
     
     printf("i2c sniffer pico initialiced!\r\n");
 
+    bool isStart = false;
+    bool filter = false;
+
     // Blocks the CPU waiting for FIFO captures from the core 0.
     while (true) {
         // It waits for the arrival of a new event for 100 uS, if it comes out due to timeout 
@@ -122,17 +125,37 @@ void core1_print() {
                 printf("%08x ", capture_index++);
 #endif
                 buff_putchar('s');
+                isStart = true;
+                filter = false;
             } else if (ev_code == EV_STOP) {
-                buff_putchar('p');
-                buff_putchar('\r');
-                buff_putchar('\n');
-                buff_print();
+                if (!filter)
+                {
+                    buff_putchar('p');
+                    buff_putchar('\r');
+                    buff_putchar('\n');
+                    buff_print();
+                }
+                isStart = false;
+                filter  = false;
             } else if (ev_code == EV_DATA) {
-                buff_putchar(nibble_to_hex(data>>4));
-                buff_putchar(nibble_to_hex(data));
-                buff_putchar(ack ? 'a' : 'n');
+                if (isStart)
+                {
+                    bool isWrite = (data & 0x01) == 0x01;
+                    uint8_t address = (data & 0xfe);
+                    filter = !isWrite || (address != 0x8a && address != 0xd4 && address != 0xe0);
+                    isStart = false;
+                }
+                if (!filter)
+                {
+                    buff_putchar(nibble_to_hex(data>>4));
+                    buff_putchar(nibble_to_hex(data));
+                    buff_putchar(ack ? 'a' : 'n');
+                }
             } else {
-                buff_putchar('u');
+                if (!filter)
+                {
+                    buff_putchar('u');
+                }
             }
 #endif
             if (!ram_fifo_overflow) {

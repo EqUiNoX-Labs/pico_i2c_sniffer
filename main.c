@@ -124,25 +124,23 @@ void core1_print() {
 #elif defined(PRINT_HEX_INDEX)
                 printf("%08x ", capture_index++);
 #endif
-                buff_putchar('s');
+                //buff_putchar('s');
                 isStart = true;
                 filter = false;
             } else if (ev_code == EV_STOP) {
                 if (!filter)
                 {
-                    buff_putchar('p');
+                    //buff_putchar('p');
                     buff_putchar('\r');
                     buff_putchar('\n');
                     buff_print();
                 }
-                isStart = false;
-                filter  = false;
             } else if (ev_code == EV_DATA) {
                 if (isStart)
                 {
-                    bool isWrite = (data & 0x01) == 0x01;
+                    bool isRead = (data & 0x01) == 0x00;
                     uint8_t address = (data & 0xfe);
-                    filter = !isWrite || (address != 0x8a && address != 0xd4 && address != 0xe0);
+                    filter = isRead || (address != 0x8a && address != 0xd4 && address != 0xe0);
                     isStart = false;
                 }
                 if (!filter)

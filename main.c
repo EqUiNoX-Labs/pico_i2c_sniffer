@@ -138,7 +138,7 @@ void core1_print() {
             } else if (ev_code == EV_DATA) {
                 if (isStart)
                 {
-                    bool isRead = (data & 0x01) == 0x00;
+                    bool isRead = (data & 0x01) == 0x01;
                     uint8_t address = (data & 0xfe);
                     filter = isRead || (address != 0x8a && address != 0xd4 && address != 0xe0);
                     isStart = false;
